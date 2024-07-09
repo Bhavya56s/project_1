@@ -5,12 +5,12 @@ import User from '../models/User.js';
 import { jwtSecret } from '../config.js';
 import ApiError from '../utils/ApiError.js';
 
-export const register = asyncHandler(async (req, res) => {
+ const register = asyncHandler(async (req, res) => {
     const { name, email, password, role } = req.body;
   
     const userExists = await User.findOne({ email });
     if (userExists) {
-      throw new ApiError(400, 'User already exists');
+      throw new ApiError(400, ` already exists`);
     }
   
     const user = new User({
@@ -22,10 +22,9 @@ export const register = asyncHandler(async (req, res) => {
   
     await user.save();
   
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: `${user.role} registered succesfully` });
   });
-// User login
-export const login = asyncHandler(async (req, res) => {
+ const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -39,3 +38,7 @@ export const login = asyncHandler(async (req, res) => {
 
   res.json({ token, message: `${user.role} logged in successfully` });
 });
+
+export {register,
+    login
+}

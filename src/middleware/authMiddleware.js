@@ -4,7 +4,6 @@ import { jwtSecret } from '../config.js';
 import ApiError from '../utils/ApiError.js';
 import asyncHandler from './asyncHandler.js';
 
-// Middleware to verify JWT and authenticate user
 export const authenticateUser = asyncHandler(async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   console.log('Received token:', token);
@@ -29,7 +28,6 @@ export const authenticateUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-// Middleware to check if the user is an admin
 export const isAdmin = asyncHandler(async (req, res, next) => {
   if (req.user.role !== 'admin') {
     throw new ApiError(403, 'Access denied. Admins only.');
