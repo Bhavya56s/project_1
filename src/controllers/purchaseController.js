@@ -1,63 +1,37 @@
-import { User } from "../models/usermodel.js";
-import { Purchase } from "../models/pruchaseModel.js";
-import { IceCream } from "../models/icecreamModel.js";
+import asyncHandler from '../middleware/asyncHandler.js';
+import IceCream from '../models/IceCream.js';
+import Purchase from '../models/Purchase.js';
+import User from '../models/User.js';
+import ApiError from '../utils/ApiError.js';
 
-const createPurchase = async (req, res) => {
-  try {
-    const { userId, iceCreamId, quantity } = req.body;
+// Create a new purchase (User only)
+export const createPurchase = asyncHandler(async (req, res) => {
+  const { iceCreamId, quantity } = req.body;
+  const userId = req.user._id;
 
-    const user = await User.findById(userId);
-    const iceCream = await IceCream.findById(iceCreamId);
-
-    if (!user || !iceCream) {
-      return res.status(404).send({ error: 'User or Ice Cream not found' });
-    }
-     
-    const totalPrice = iceCream.price * quantity;
-    const purchase = new Purchase({ userId, iceCreamId, quantity,totalPrice });
-    await purchase.save();
-    user.totalAmountSpent += totalPrice;
-    await user.save();
-    
-    res.status(201).send({ purchase, totalAmountSpent: user.totalAmountSpent });
-  } catch (error) {
-    console.error('Error creating purchase:', error);
-    res.status(400).send(error);
+  // Fetch ice cream details to get the price
+  const iceCream = await IceCream.findById(iceCreamId);
+  if (!iceCream) {
+    throw new ApiError(404, 'Ice cream not found');
   }
-};
- const getPurchasesByUser = async (req, res) => {
-    try {
-      const userId = req.params.userId;
-  
-      const userPurchases = await Purchase.find({ userId });
-  
-      res.send(userPurchases);
-    } catch (error) {
-        console.error('Error creating purchase:', error);
-      res.status(500).send(error);
-    }
-  };
-const getTotalBillForUser = async (req, res) => {
-    try {
-      const userId = req.params.userId;
-  
-      const userPurchases = await Purchase.find({ userId });
-  
-      let totalBill = 0;
-      userPurchases.forEach((purchase) => {
-        totalBill += purchase.totalPrice;
-      });
-  
-      res.send({ totalBill });
-    } catch (error) {
-        console.error('Error creating purchase:', error);
-      res.status(500).send(error);
-    }
-  };
 
-export {getPurchasesByUser,createPurchase,getTotalBillForUser}
+  // Calculate total price based on ice cream price and quantity
+  const totalPrice = iceCream.price * quantity;
 
+  // Create new purchase record
+  const purchase = new Purchase({ userId, iceCreamId, quantity, totalPrice });
+  await purchase.save();
 
+  // Update user's totalAmountSpent
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
 
+  user.totalAmountSpent += totalPrice;
+  await user.save();
 
+  res.status(201).json({ purchase, totalAmountSpent: user.totalAmountSpent });
+});
 
+// Other methods (getPurchasesByUser, getTotalBillForUser)...
