@@ -31,7 +31,18 @@ import ApiError from '../utils/apiError.js';
   res.status(201).json({ purchase, totalAmountSpent: user.totalAmountSpent });
 });
 
+const getAllPurchasesByUser = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  
+  // Ensure the logged-in user is either the user themselves or an admin
+  if (req.user.role !== 'admin' && req.user._id.toString() !== userId) {
+    throw new ApiError(403, 'Access denied.');
+  }
+
+  const purchases = await Purchase.find({ userId }).populate('iceCreamId', 'name price');
+  res.status(200).json(purchases);
+});
 
 
-export { createPurchase}
+export { createPurchase,getAllPurchasesByUser}
 
