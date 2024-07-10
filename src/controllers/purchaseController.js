@@ -2,7 +2,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import IceCream from '../models/IceCream.js';
 import Purchase from '../models/Purchase.js';
 import User from '../models/User.js';
-import ApiError from '../utils/ApiError.js';
+import ApiError from '../utils/apiError.js';
 
 
  const createPurchase = asyncHandler(async (req, res) => {

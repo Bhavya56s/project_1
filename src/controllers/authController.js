@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import asyncHandler from '../middleware/asyncHandler.js';
 import User from '../models/User.js';
 import { jwtSecret } from '../config.js';
-import ApiError from '../utils/ApiError.js';
+import ApiError from '../utils/apiError.js';
 
  const register = asyncHandler(async (req, res) => {
     const { name, email, password, role } = req.body;

@@ -6,5 +6,8 @@ import * as productController from '../controllers/productController.js';
 router.post('/icecreams', authenticateUser, isAdmin, productController.createIceCream);
 router.put('/icecreams/:id', authenticateUser, isAdmin, productController.updateIceCream);
 router.delete('/icecreams/:id', authenticateUser, isAdmin, productController.deleteIceCream);
+router.get('/icecreams/all',authenticateUser,productController.selectIceCream)
+
 
 export default router;
+

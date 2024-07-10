@@ -31,7 +31,15 @@ import ApiError from '../utils/apiError.js';
   res.json(iceCream);
 });
 
-export {createIceCream,
+
+const selectIceCream = asyncHandler(async(req,res) =>{
+  const iceCreams = await IceCream.find();
+  res.status(200).json(iceCreams);
+})
+
+export {
+  createIceCream,
   updateIceCream,
-  deleteIceCream
+  deleteIceCream,
+  selectIceCream
 }
